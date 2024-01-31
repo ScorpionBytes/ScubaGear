@@ -52,7 +52,7 @@ jobs:
       - name: Install Azure Signing Tool
         run: |
           dotnet --version
-          dotnet tool install --global AzureSignTool --version 4.0.1  
+          dotnet tool install --global AzureSignTool --version 4.0.1
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -162,7 +162,7 @@ jobs:
         with:
           keyvault: ${{ needs.Release-Prep.outputs.KeyVaultUrl}}
           secrets: 'ScubaGear-PSGAllery-API-Key'
-        id: KeyVaultSecrets  
+        id: KeyVaultSecrets
       - name: Sign and publish module to private gallery
         uses: azure/powershell@v1
         env:
@@ -191,6 +191,6 @@ jobs:
       - name: Check Scuba Version
         run: |
           repo/SetUp.ps1 -NoOPA
-          Install-Module -Name ScubaGear 
+          Install-Module -Name ScubaGear
           Import-Module -Name ScubaGear
           Invoke-SCuBA -Version
