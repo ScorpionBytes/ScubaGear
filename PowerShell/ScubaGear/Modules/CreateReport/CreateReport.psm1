@@ -77,6 +77,42 @@ function New-Report {
 
     $MetaDataTable = $MetaData | ConvertTo-HTML -Fragment
     $MetaDataTable = $MetaDataTable -replace '^(.*?)<table>','<table id="tenant-data" style = "text-align:center;">'
+    $MetaDataTable = $MetaDataTable -replace '^(.*?)<col>', '<col scope="col">'
+    #$MetaDataTable = $MetaDataTable -replace '(?<=<tbody>)\s*<tr>\s*(.*?)\s*</tr>', {
+    #    param($str)
+    #    $str.Value -replace '(<th)', '$1 scope="row"'
+    #}
+    
+    # Define table structure 
+    $MetaDataTable = @()
+    $MetaDataTable += '<table id="tenant-data" style = "text-align:center;">'
+
+    $TableColumns = "<thead><tr>"
+    $TableBody = "<tbody><tr>"
+    $count = 0
+    $MetaData.PSObject.Properties | ForEach-Object {
+        # Build the head of the table
+        $TableColumns += '<th scope="col">' + $_.Name + '</th>'
+
+        #Build the body of the table
+        Write-Host $count
+        # Begin with <th> tag
+        if ($count -eq 0) {
+            $TableBody += '<th scope="row">' + $_.Value + '</th>'
+        }
+        else {
+            $TableBody += '<td>' + $_.Value + '</td>'
+        }
+        
+        $count++
+    }
+    $TableColumns += "</tr></thead>"
+    $MetaDataTable += $TableColumns
+
+    $TableBody += "</tr></tbody>"
+    $MetaDataTable += $TableBody
+    
+
     $Fragments += $MetaDataTable
     $ReportSummary = @{
         "Warnings" = 0;
