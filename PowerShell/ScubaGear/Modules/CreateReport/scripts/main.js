@@ -296,6 +296,22 @@ const expandCAPRow = (event) => {
     }
 }
 
+const applyScopeAttributes = () => {
+    try {
+        let buttons = document.querySelectorAll("img[src*='angle-down-solid.svg']");
+        
+        // first select all tables
+        // each table has two children, <colgroup> and <tbody>
+        // <tbody> will have 1 to many <tr> children
+        // the first <tr> in <tbody> will always represent the columns. Label each child inside as scope="col"
+
+    }
+    catch (error) {
+        console.error("Error in applyScopeAttributes");
+        console.error(error);
+    }
+}
+
 window.addEventListener('DOMContentLoaded', (event) => {
     colorRows();
     fillCAPTable();

@@ -75,36 +75,36 @@ function New-Report {
         "Module Version" = $SettingsExport.module_version
     }
 
-    # $MetaDataTable = $MetaData | ConvertTo-HTML -Fragment
-    # $MetaDataTable = $MetaDataTable -replace '^(.*?)<table>','<table id="tenant-data" style = "text-align:center;">'
+    $MetaDataTable = $MetaData | ConvertTo-HTML -Fragment
+    $MetaDataTable = $MetaDataTable -replace '^(.*?)<table>','<table id="tenant-data" style = "text-align:center;">'
     
     # Define table structure 
-    $MetaDataTable = @()
-    $MetaDataTable += '<table id="tenant-data" style = "text-align:center;">'
-
-    $TableColumns = "<thead><tr>"
-    $TableBody = "<tbody><tr>"
-    $count = 0
-    $MetaData.PSObject.Properties | ForEach-Object {
-        # Build the head of the table
-        $TableColumns += '<th scope="col">' + $_.Name + '</th>'
-
-        # Build the body of the table
-        if ($count -eq 0) {
-            $TableBody += '<th scope="row">' + $_.Value + '</th>'
-        }
-        else {
-            $TableBody += '<td>' + $_.Value + '</td>'
-        }
-        
-        $count++
-    }
-    $TableColumns += "</tr></thead>"
-    $MetaDataTable += $TableColumns
-
-    $TableBody += "</tr></tbody>"
-    $MetaDataTable += $TableBody 
-    $MetaDataTable += "</table>"
+    #$MetaDataTable = @()
+    #$MetaDataTable += '<table id="tenant-data" style = "text-align:center;">'
+#
+    #$TableColumns = "<thead><tr>"
+    #$TableBody = "<tbody><tr>"
+    #$count = 0
+    #$MetaData.PSObject.Properties | ForEach-Object {
+    #    # Build the head of the table
+    #    $TableColumns += '<th scope="col">' + $_.Name + '</th>'
+#
+    #    # Build the body of the table
+    #    if ($count -eq 0) {
+    #        $TableBody += '<th scope="row">' + $_.Value + '</th>'
+    #    }
+    #    else {
+    #        $TableBody += '<td>' + $_.Value + '</td>'
+    #    }
+    #    
+    #    $count++
+    #}
+    #$TableColumns += "</tr></thead>"
+    #$MetaDataTable += $TableColumns
+#
+    #$TableBody += "</tr></tbody>"
+    #$MetaDataTable += $TableBody 
+    #$MetaDataTable += "</table>"
     
 
     $Fragments += $MetaDataTable
@@ -193,6 +193,10 @@ function New-Report {
         $GroupAnchor = New-MarkdownAnchor -GroupNumber $BaselineGroup.GroupNumber -GroupName $BaselineGroup.GroupName
         $MarkdownLink = "<a class='control_group' href=`"$($ScubaGitHubUrl)/blob/v$($SettingsExport.module_version)/PowerShell/ScubaGear/baselines/$($BaselineName.ToLower()).md$GroupAnchor`" target=`"_blank`">$Name</a>"
         $Fragments += $Fragment | ConvertTo-Html -PreContent "<h2>$Number $MarkdownLink</h2>" -Fragment
+
+        #$TableId = 'table' + $BaselineName.ToUpper() + '-' + $BaselineGroup.GroupNumber
+        $Fragments = $Fragments -replace '.*(<table(?![^>]+id)*>)', '<table class="policy-data" style = "text-align:center;">'
+
     }
 
     $Title = "$($FullName) Baseline Report"
