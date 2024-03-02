@@ -97,6 +97,9 @@ const fillCAPTable = () => {
         table.setAttribute("class", "caps_table");
         capDiv.appendChild(table);
 
+        let tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+
         let header = document.createElement("tr");
         for (let i = 0; i < capColNames.length; i++) {
             let th = document.createElement("th");
@@ -115,7 +118,7 @@ const fillCAPTable = () => {
             th.innerHTML = capColNames[i];
             header.appendChild(th);
         }
-        table.appendChild(header);
+        tbody.appendChild(header);
 
         for (let i = 0; i < caps.length; i++) {
             let tr = document.createElement("tr");
@@ -133,7 +136,7 @@ const fillCAPTable = () => {
             img.rowNumber = i;
             img.addEventListener("click", expandCAPRow);
             tr.querySelectorAll('td')[0].appendChild(img);
-            table.appendChild(tr);
+            tbody.appendChild(tr);
         }
     }
     catch (error) {
@@ -296,6 +299,9 @@ const expandCAPRow = (event) => {
     }
 }
 
+/**
+ * For each table present in a report, the function adds scope attributes for columns and rows. 
+ */
 const applyScopeAttributes = () => {
     try {
         // first select all tables
@@ -315,12 +321,18 @@ const applyScopeAttributes = () => {
             // For each <tr>, the first <td> child should be labeled as scope="row", leave the rest 
             let cols, rows;
             if(tbody.children || tbody.children.length > 1) {
-                cols = Array.from(tbody.children[0].querySelectorAll("th"));
-                cols.map(th => th.setAttribute("scope", "col"));
+                cols = tbody.children[0].querySelectorAll("th");
+                for(let th = 0; th < cols.length; th++) {
+                    cols[th].setAttribute("scope", "col");
+                }
 
-                // remove column <tr>
+                let trIdx = (tables[i].classList.contains("caps_table")) ? 1 : 0;
+
+                // remove column <tr>; for each remaining <tr> set the scope of first instance of <td> 
                 rows = Array.from(tbody.children).slice(1);
-                rows.map(row => Array.from(row.querySelectorAll("td"))[0].setAttribute("scope", "row"));
+                for(let tr = 0; tr < rows.length; tr++) {
+                    rows[tr].querySelectorAll("td")[trIdx].setAttribute("scope", "row");
+                }
             }
             else throw new Error(
                 `Unable to apply scope attributes to columns/rows. The <tbody> of <table ${i + 1} does not contain children or has no rows.`
