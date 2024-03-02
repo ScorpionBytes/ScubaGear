@@ -298,22 +298,43 @@ const expandCAPRow = (event) => {
 
 const applyScopeAttributes = () => {
     try {
-        let buttons = document.querySelectorAll("img[src*='angle-down-solid.svg']");
-        
         // first select all tables
-        // each table has two children, <colgroup> and <tbody>
-        // <tbody> will have 1 to many <tr> children
-        // the first <tr> in <tbody> will always represent the columns. Label each child inside as scope="col"
+        const tables = document.querySelectorAll("table");
 
+        // each table has two children, <colgroup> and <tbody>
+        for(let i = 0; i < tables.length; i++) {
+            // <tbody> will at a minimum 2 to many <tr> children
+            let tbody = tables[i].querySelector("tbody");
+            if(!tbody) throw new Error(
+                `Invalid HTML structure, <table> ${i + 1} does not have <tbody> tag.`
+            )
+            
+            // the first <tr> in <tbody> will represents columns. Label each child inside as scope="col"
+            // 
+            // second <tr> + ... are the rows. 
+            // For each <tr>, the first <td> child should be labeled as scope="row", leave the rest 
+            let cols, rows;
+            if(tbody.children || tbody.children.length > 1) {
+                cols = Array.from(tbody.children[0].querySelectorAll("th"));
+                cols.map(th => th.setAttribute("scope", "col"));
+
+                // remove column <tr>
+                rows = Array.from(tbody.children).slice(1);
+                rows.map(row => Array.from(row.querySelectorAll("td"))[0].setAttribute("scope", "row"));
+            }
+            else throw new Error(
+                `Unable to apply scope attributes to columns/rows. The <tbody> of <table ${i + 1} does not contain children or has no rows.`
+            )
+        }
     }
     catch (error) {
-        console.error("Error in applyScopeAttributes");
-        console.error(error);
+        console.error(`Error in applyScopeAttributes, ${error}`);
     }
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
     colorRows();
     fillCAPTable();
+    applyScopeAttributes();
     mountDarkMode("Individual Report");
 });
