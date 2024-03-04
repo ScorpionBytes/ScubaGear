@@ -75,8 +75,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Each item in the matrix is one alias and thus should cause 
-        # one step in this job.  This should make it easier to debug 
+        # Each item in the matrix is one alias and thus should cause
+        # one step in this job.  This should make it easier to debug
         # when a product is failing the functional tests.
         product: ${{ fromJson(needs.build-matrix.outputs.aliases) }}
     steps:
@@ -181,69 +181,3 @@ jobs:
           }
         env:
           TestParams: ${{ secrets.NIGHTLY_TEST_BUILD_PARAMS_DEV }}
-  #     - name: Create PFX
-  #       run: |
-  #         New-Item -ItemType file -Path ./key.txt
-  #         Set-Content -Path ./key.txt -Value $env:PfxBase64
-  #         certutil -decode ./key.txt ./key.pfx
-  #       env:
-  #         PfxBase64: ${{ secrets.NIGHTLY_TEST_BUILD_PFX }}
-  #     - name: Import PFX
-  #       # Pipe to Out-Null to hide the thumbprint
-  #       run: Import-PfxCertificate -Password (ConvertTo-SecureString -String $env:PfxPassword -AsPlainText -Force) -CertStoreLocation Cert:\CurrentUser\My -FilePath ./key.pfx | Out-Null
-  #       env:
-  #         PfxPassword: ${{ secrets.NIGHTLY_TEST_BUILD_PW }}
-  #     - name: Get Thumbprint
-  #       id: get-thumbprint
-  #       run: |
-  #         $x509 = Get-PfxCertificate -FilePath ./key.pfx -Password (ConvertTo-SecureString -String $env:PfxPassword -AsPlainText -Force)
-  #         $Thumbprint = $x509.ThumbPrint
-  #         # Store the thumbprint where it can be accessed as an output.
-  #         echo thumbprint=$Thumbprint >> $env:GITHUB_OUTPUT
-  #       shell: pwsh # -Password flag requires PS 6+
-  #       env:
-  #         PfxPassword: ${{ secrets.NIGHTLY_TEST_BUILD_PW }}
-  #     - name: Setup for Scuba
-  #       run: ./SetUp.ps1
-  #     - name: Install Selenium
-  #       run: Install-Module -Name Selenium
-  #     - name: Update Selenium
-  #       run: ./Testing/Functional/SmokeTest/UpdateSelenium.ps1
-      # - name: Test Product
-      #   id: test-product
-      #   # This job parses the keys and values in the matrx array
-      #   # and converts them to a hashtable.
-      #   run: |
-      #      # Read thumbprint from previous step.
-      #      # $thumbprint = "${{ steps.get-thumbprint.outputs.thumbprint }}"
-      #     $params = $env:TestParams
-      #     $params = "${{ matrix.product }}"
-      #   env:
-      #     TestParams: ${{ secrets.NIGHTLY_TEST_BUILD_PARAMS_DEV }}
-      #     echo "Testing the following alias..."
-      #     echo "${{ matrix.product }}"
-      #     $products = $params.split("|")
-      #     foreach ($product in $products)
-      #     {
-      #       print("product")
-      #     }
-  #         $paramsAsHashTable = @{}
-  #         # Split into pairs
-  #         $pairs = $params.split(";")  # Because I replaced , with ; in matrix
-  #         foreach ($pair in $pairs)
-  #         {
-  #           # Split the key from the value
-  #           $keyAndValue = $pair.split("=")
-  #           $key = $keyAndValue[0]
-  #           $value = $keyAndValue[1]
-  #           if($key -eq "Alias")
-  #           {
-  #             echo "Testing the following product: $value"
-  #           }
-  #           else
-  #           {
-  #             $paramsAsHashTable.Add($key, $value)
-  #           }
-  #         }
-  #         ./Testing/Functional/Products/Tests/CallProductTests.ps1 -params $paramsAsHashTable -thumbprint $thumbprint
-        
