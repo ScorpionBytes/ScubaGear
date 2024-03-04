@@ -115,6 +115,9 @@ function Initialize-SCuBA {
     if (Test-Path -Path $RequiredModulesPath) {
         . $RequiredModulesPath
     }
+    else {
+        Write-Error "Unable to find required modules path at $RequiredModulesPath"
+    }
 
     if ($ModuleList) {
         # Add PowerShellGet to beginning of ModuleList for installing required modules.
