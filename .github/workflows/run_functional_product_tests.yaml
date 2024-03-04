@@ -104,8 +104,9 @@ jobs:
         shell: pwsh # -Password flag requires PS 6+
         env:
           PfxPassword: ${{ secrets.NIGHTLY_TEST_BUILD_PW }}
-
-      - name: Install Selenium & Update Webdriver (an interface that allows for control of web brosers programmatically)
+      # Selenium is an interface that allows for
+      # the programmatic control of web browsers
+      - name: Install Selenium & Update Webdriver
         run: |
           Install-Module -Name Selenium -Scope CurrentUser -Force
           Import-Module -Name Selenium
@@ -114,11 +115,8 @@ jobs:
           Install-OPA
           # Workaround for Selenium. Loading psm1 instead of psd1
           Import-Module -Name (Get-Module -Name Selenium -ListAvailable).Path -Force
-      - name: Test Products
-        # The testing params are stored as a string in a CSV-like format.
-        # Pipes separate products, and commas separate key/value pairs.
-        # key1=value1,key2=value2|key3=value3,key4=value4...
-        # This job parses the keys and values and converts them to a hashtable.
+      - name: Test Product
+        id: test-product
         run: |
           # Read thumbprint from previous step.
           $thumbprint = "${{ steps.get-thumbprint.outputs.thumbprint }}"
