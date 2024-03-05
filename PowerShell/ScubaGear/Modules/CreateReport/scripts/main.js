@@ -299,51 +299,6 @@ const expandCAPRow = (event) => {
     }
 }
 
-/**
- * For each table present in a report, the function adds scope attributes for columns and rows. 
- */
-const applyScopeAttributes = () => {
-    try {
-        // first select all tables
-        const tables = document.querySelectorAll("table");
-
-        // each table has two children, <colgroup> and <tbody>
-        for(let i = 0; i < tables.length; i++) {
-            // <tbody> will at a minimum 2 to many <tr> children
-            let tbody = tables[i].querySelector("tbody");
-            if(!tbody) throw new Error(
-                `Invalid HTML structure, <table> ${i + 1} does not have <tbody> tag.`
-            )
-            
-            // the first <tr> in <tbody> will represents columns. Label each child inside as scope="col"
-            // 
-            // second <tr> + ... are the rows. 
-            // For each <tr>, the first <td> child should be labeled as scope="row", leave the rest 
-            let cols, rows;
-            if(tbody.children || tbody.children.length > 1) {
-                cols = tbody.children[0].querySelectorAll("th");
-                for(let th = 0; th < cols.length; th++) {
-                    cols[th].setAttribute("scope", "col");
-                }
-
-                let trIdx = (tables[i].classList.contains("caps_table")) ? 1 : 0;
-
-                // remove column <tr>; for each remaining <tr> set the scope of first instance of <td> 
-                rows = Array.from(tbody.children).slice(1);
-                for(let tr = 0; tr < rows.length; tr++) {
-                    rows[tr].querySelectorAll("td")[trIdx].setAttribute("scope", "row");
-                }
-            }
-            else throw new Error(
-                `Unable to apply scope attributes to columns/rows. The <tbody> of <table ${i + 1} does not contain children or has no rows.`
-            )
-        }
-    }
-    catch (error) {
-        console.error(`Error in applyScopeAttributes, ${error}`);
-    }
-}
-
 window.addEventListener('DOMContentLoaded', (event) => {
     colorRows();
     fillCAPTable();
