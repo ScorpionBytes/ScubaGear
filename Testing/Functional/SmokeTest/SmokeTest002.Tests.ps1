@@ -153,6 +153,10 @@ Describe -Tag "UI","Chrome" -Name "Test Report with <Browser> for $OrganizationN
                         $RowData[1].GetAttribute("scope") | Should -Be "row" -Because "There should only be one scope attribute set for each data row"
                         $RowData[2].GetAttribute("scope") | Should -Not -Be "row"
                         $RowData[3].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[4].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[5].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[6].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[7].GetAttribute("scope") | Should -Not -Be "row"
                     }
                 }
                 # Default is normal policy results table
@@ -185,6 +189,7 @@ Describe -Tag "UI","Chrome" -Name "Test Report with <Browser> for $OrganizationN
                         $RowData[1].GetAttribute("scope") | Should -Not -Be "row"
                         $RowData[2].GetAttribute("scope") | Should -Not -Be "row"
                         $RowData[3].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[4].GetAttribute("scope") | Should -Not -Be "row"
                     }
                 }
             }
