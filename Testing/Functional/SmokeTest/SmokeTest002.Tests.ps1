@@ -109,6 +109,21 @@ Describe -Tag "UI","Chrome" -Name "Test Report with <Browser> for $OrganizationN
                     $TenantDataColumns = Get-SeElement -Target $Rows[1] -By TagName "td"
                     $Tenant = $TenantDataColumns[0].Text
                     $Tenant | Should -Be $OrganizationName -Because "Tenant is $Tenant"
+
+                    $RowHeaders = Get-SeElement -Element $Rows[0] -By TagName 'th'
+
+                    ForEach ($Header in $RowHeaders){
+                        $Header.GetAttribute("scope") | Should -Be "col" -Because 'Each <th> tag must have a scope attribute set to "col"'
+                    }
+
+                    For ($i = 1; $i -lt $Rows.length; $i++){
+                        $RowData = Get-SeElement -Element $Rows[$i] -By TagName 'td'
+                        $RowData[0].GetAttribute("scope") | Should -Be "row" -Because "There should only be one scope attribute set for each data row"
+                        $RowData[1].GetAttribute("scope") | Should -Be $null
+                        $RowData[2].GetAttribute("scope") | Should -Be $null
+                        $RowData[3].GetAttribute("scope") | Should -Be $null
+                    }
+                    
                 }
                 # AAD detailed report has a Conditional Access Policy table
                 elseif ($Table.GetAttribute("class") -eq "caps_table"){
