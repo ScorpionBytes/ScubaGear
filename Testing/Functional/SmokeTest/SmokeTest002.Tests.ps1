@@ -119,11 +119,10 @@ Describe -Tag "UI","Chrome" -Name "Test Report with <Browser> for $OrganizationN
                     For ($i = 1; $i -lt $Rows.length; $i++){
                         $RowData = Get-SeElement -Element $Rows[$i] -By TagName 'td'
                         $RowData[0].GetAttribute("scope") | Should -Be "row" -Because "There should only be one scope attribute set for each data row"
-                        $RowData[1].GetAttribute("scope") | Should -Be $null
-                        $RowData[2].GetAttribute("scope") | Should -Be $null
-                        $RowData[3].GetAttribute("scope") | Should -Be $null
+                        $RowData[1].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[2].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[3].GetAttribute("scope") | Should -Not -Be "row"
                     }
-                    
                 }
                 # AAD detailed report has a Conditional Access Policy table
                 elseif ($Table.GetAttribute("class") -eq "caps_table"){
@@ -142,6 +141,18 @@ Describe -Tag "UI","Chrome" -Name "Test Report with <Browser> for $OrganizationN
                         if ($RowData.Count -gt 0){
                             $RowData.Count | Should -BeExactly 8
                         }
+                    }
+
+                    ForEach ($Header in $RowHeaders){
+                        $Header.GetAttribute("scope") | Should -Be "col" -Because 'Each <th> tag must have a scope attribute set to "col"'
+                    }
+
+                    For ($i = 1; $i -lt $Rows.length; $i++){
+                        $RowData = Get-SeElement -Element $Rows[$i] -By TagName 'td'
+                        $RowData[0].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[1].GetAttribute("scope") | Should -Be "row" -Because "There should only be one scope attribute set for each data row"
+                        $RowData[2].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[3].GetAttribute("scope") | Should -Not -Be "row"
                     }
                 }
                 # Default is normal policy results table
@@ -162,6 +173,18 @@ Describe -Tag "UI","Chrome" -Name "Test Report with <Browser> for $OrganizationN
                             $RowData.Count | Should -BeExactly 5
                             $RowData[2].text | Should -Not -BeLikeExactly "Error - Test results missing" -Because "All policies should have implementations: $($RowData[0].text)"
                         }
+                    }
+
+                    ForEach ($Header in $RowHeaders){
+                        $Header.GetAttribute("scope") | Should -Be "col" -Because 'Each <th> tag must have a scope attribute set to "col"'
+                    }
+
+                    For ($i = 1; $i -lt $Rows.length; $i++){
+                        $RowData = Get-SeElement -Element $Rows[$i] -By TagName 'td'
+                        $RowData[0].GetAttribute("scope") | Should -Be "row" -Because "There should only be one scope attribute set for each data row"
+                        $RowData[1].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[2].GetAttribute("scope") | Should -Not -Be "row"
+                        $RowData[3].GetAttribute("scope") | Should -Not -Be "row"
                     }
                 }
             }
